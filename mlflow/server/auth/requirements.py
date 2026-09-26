@@ -149,18 +149,7 @@ def governing_permission(
     return floor_positive_permission(absent, default_permission)
 
 
-def permission_allows(permission: Permission, action: str) -> bool:
-    """Does ``permission`` grant ``action``?
-
-    Split out of :func:`requirement_met` so the legacy validator surface -- which has
-    no ``Requirement`` list -- can test an action against a permission using the same
-    vocabulary, rather than reaching for the capability attribute directly or
-    constructing a ``Requirement`` whose type and id would go unused.
-    """
-    if action == ACTION_NOT_DENIED:
-        return not permission.denied
-    return bool(getattr(permission, _ACTION_CAPABILITY[action]))
-
-
 def requirement_met(requirement: Requirement, permission: Permission) -> bool:
-    return permission_allows(permission, requirement.action)
+    if requirement.action == ACTION_NOT_DENIED:
+        return not permission.denied
+    return bool(getattr(permission, _ACTION_CAPABILITY[requirement.action]))
